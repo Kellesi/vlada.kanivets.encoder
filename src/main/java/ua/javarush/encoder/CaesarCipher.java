@@ -2,54 +2,71 @@ package ua.javarush.encoder;
 
 import java.util.*;
 
-public class CaesarCipher {
+public class CaesarCipher implements Cipher {
     final int key;
-    CaesarCipher(int keyValue){
+    private EncryptorMode mode;
+    private final String language;
+    private static final String DEFAULT_LANGUAGE = "eng";
+
+    private static final char[] SYMBOLS = {'.', ',', '«', '»', '"', '\'', ':', '!', '?', ' '};
+    private static final char[] UKR_ALPHABET = {'а', 'б', 'в', 'г', 'ґ', 'д', 'е', 'є', 'ж', 'з', 'и', 'і', 'ї', 'й',
+            'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ь', 'ю', 'я'};
+    private final Map<Integer, Character> alphabet = new LinkedHashMap<>();
+
+    CaesarCipher(int keyValue) {
         key = keyValue;
+        language = DEFAULT_LANGUAGE;
         initAlphabet();
     }
-    private String mode;
-    private static final char[] symbols ={'.', ',', '«', '»', '"', '\'', ':', '!', '?', ' '};
-    private static Map<Integer, Character> engAlphabet = new LinkedHashMap<>();
-    private static Map<Integer, Character> ukrAlphabet = new HashMap<>();
 
-    public static int encryptIt(int character) {
-        boolean isBig=false;
-        // TODO: think about it
-        if (character>=((int)'A') && character<=((int)'Z')){
-            isBig=true;
-            character-=32;
-
-        }
-        Character encrypted = engAlphabet.get(character);
-        return encrypted!=null? (isBig? encrypted+32: encrypted):character;
+    CaesarCipher(int keyValue, String textLanguage) {
+        key = keyValue;
+        language = textLanguage;
+        initAlphabet();
     }
 
-    public void setMode(String mode) {
-        this.mode=mode;
-    }
-    private void initAlphabet(){
-        for (char i ='a'; i<='z';i++){
-            engAlphabet.put((int)i,i);
+    @Override
+    public int encryptIt(int character) {
+        boolean isUpperCase = false;
+
+        if (Character.isUpperCase(character)) {
+            character = Character.toLowerCase(character);
+            isUpperCase = true;
         }
-        for (char symb:symbols) {
-            engAlphabet.put((int) symb,symb);
-        }
-//        for (Map.Entry<Integer,Character> ch: engAlphabet.entrySet()) {
-//            System.out.println(ch);
-//        }
-        encryptAlphabet(key);
-//        for (Map.Entry<Integer,Character> ch: engAlphabet.entrySet()) {
-//           System.out.println(ch);
-//        }
+        Character encrypted = alphabet.get(character);
+        return encrypted != null ? (isUpperCase ? Character.toUpperCase(encrypted) : encrypted)
+                : (isUpperCase ? Character.toUpperCase(character) : character);
     }
-    private void encryptAlphabet(int key){
-        ArrayList<Character> rolledChars = new ArrayList<>(engAlphabet.values());
-        Collections.rotate(rolledChars,key);
-        int i =0;
-        for (Map.Entry<Integer,Character> map:engAlphabet.entrySet()) {
+
+    private void encryptAlphabet(int key) {
+        if (mode==EncryptorMode.DECRYPT) {
+            key=-key;
+        }
+        ArrayList<Character> rolledChars = new ArrayList<>(alphabet.values());
+        Collections.rotate(rolledChars, key);
+        int i = 0;
+        for (Map.Entry<Integer, Character> map : alphabet.entrySet()) {
             map.setValue(rolledChars.get(i++));
         }
     }
 
+    public void setMode(String mode) {
+
+    }
+
+    private void initAlphabet() {
+        if (language.equals("eng")) {
+            for (char character = 'a'; character <= 'z'; character++) {
+                alphabet.put((int) character, character);
+            }
+        } else if (language.equals("ukr")) {
+            for (char character : UKR_ALPHABET) {
+                alphabet.put((int) character, character);
+            }
+        }
+        for (char symb : SYMBOLS) {
+            alphabet.put((int) symb, symb);
+        }
+        encryptAlphabet(key);
+    }
 }
