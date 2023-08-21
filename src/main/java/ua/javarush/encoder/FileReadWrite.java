@@ -22,7 +22,7 @@ public class FileReadWrite {
         }
     }
 
-    public String defineLanguage() {
+    public String getLanguage() {
         int engCharCounter = 0;
         int ukrCharCounter = 0;
         try (FileReader fileReader = new FileReader(source)) {
