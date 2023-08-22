@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class LanguageAnalyzer {
-    public String getLanguage(Integer[] buffer) {
+    public static String getLanguage(Integer[] buffer) {
         String langCode = "";
         int mostMatches = 0;
         for (Map.Entry<String, List<Character>> currentLang : AlphabetRepository.getLangMap().entrySet()) {
@@ -25,7 +25,7 @@ public class LanguageAnalyzer {
         return langCode;
     }
 
-    public String getLanguage(String[] buffer) {
+    public static String getLanguage(String[] buffer) {
         String langCode = "";
         int mostMatches = 0;
         for (Map.Entry<String, List<Character>> currentLang : AlphabetRepository.getLangMap().entrySet()) {

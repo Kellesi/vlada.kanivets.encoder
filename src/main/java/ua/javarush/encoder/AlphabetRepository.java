@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,11 +18,11 @@ public class AlphabetRepository {
     }
 
     public static HashMap<String, List<Character>> getLangMap() {
-        return languageToAlphabet;
+        return new HashMap<>(languageToAlphabet);
     }
 
-    public static List<Character> getLang(String langCode) {
-        return languageToAlphabet.get(langCode);
+    public static ArrayList<Character> getLang(String langCode) {
+        return new ArrayList<>(languageToAlphabet.get(langCode));
     }
 
     public static void addLanguage(String languageName, List<Character> languageCharacters) {

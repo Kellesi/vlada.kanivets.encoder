@@ -1,60 +1,61 @@
 package ua.javarush.encoder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CaesarCipher implements Cipher {
-    private final int key;
-    private EncryptorMode mode;
-    private final String language;
-    private static final char[] SYMBOLS = {'.', ',', '«', '»', '"', '\'', ':', '!', '?', ' '};
-    private static final char[] UKR_ALPHABET = {'а', 'б', 'в', 'г', 'ґ', 'д', 'е', 'є', 'ж', 'з', 'и', 'і', 'ї', 'й',
-            'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ь', 'ю', 'я'};
-    private final Map<Integer, Character> alphabet = new LinkedHashMap<>();
+public class CaesarCipher {
+    private final LinkedHashMap<Integer, Character> encryptedAlphabet = new LinkedHashMap<>();
 
-    CaesarCipher(int keyValue, String textLanguage, String mode) {
-        key = keyValue;
-        language = textLanguage;
-        this.mode = EncryptorMode.valueOf(mode);
-        initAlphabet();
+    public Integer[] encryptIntegerArray(Integer[] buffer, int key, EncryptorMode mode, List<Character> alphabet) {
+        setEncryptedAlphabet(key, mode, alphabet);
+        Integer[] encryptedArray = new Integer[buffer.length];
+        int i = 0;
+        for (int character : buffer) {
+            encryptedArray[i++] = encryptChar(character);
+        }
+        return encryptedArray;
     }
 
-    @Override
-    public int encryptIt(int character) {
-        boolean isUpperCase = false;
+    public String[] encryptStringArray(String[] buffer, int key, EncryptorMode mode, List<Character> alphabet) {
+        setEncryptedAlphabet(key, mode, alphabet);
+        String[] encryptedArray = new String[buffer.length];
+        StringBuilder newLine = new StringBuilder();
+        int i = 0;
+        for (String line : buffer) {
+            for (char character : line.toCharArray()) {
+                newLine.append((char) encryptChar(character));
+            }
+            encryptedArray[i++] = newLine.toString();
+        }
+        return encryptedArray;
+    }
 
+    private int encryptChar(int character) {
+        Character encrypted = null;
         if (Character.isUpperCase(character)) {
-            character = Character.toLowerCase(character);
-            isUpperCase = true;
+            if (encryptedAlphabet.containsKey(Character.toLowerCase(character))) {
+                encrypted = Character.toUpperCase(encryptedAlphabet.get(Character.toLowerCase(character)));
+            }
+        } else {
+            encrypted = encryptedAlphabet.get(character);
         }
-        Character encrypted = alphabet.get(character);
-        return encrypted != null ? (isUpperCase ? Character.toUpperCase(encrypted) : encrypted)
-                : (isUpperCase ? Character.toUpperCase(character) : character);
+        return encrypted != null ? encrypted : character;
     }
 
-    private void initAlphabet() {
-        if (language.equals("eng")) {
-            for (char character = 'a'; character <= 'z'; character++) {
-                alphabet.put((int) character, character);
-            }
-        } else if (language.equals("ukr")) {
-            for (char character : UKR_ALPHABET) {
-                alphabet.put((int) character, character);
-            }
+    private void setEncryptedAlphabet(int key, EncryptorMode mode, List<Character> alphabet) {
+        for (char character : alphabet) {
+            encryptedAlphabet.put((int) character, character);
         }
-        for (char symb : SYMBOLS) {
-            alphabet.put((int) symb, symb);
-        }
-        encryptAlphabet(key);
-    }
-
-    private void encryptAlphabet(int key) {
         if (mode == EncryptorMode.DECRYPT) {
-            key = -key;
+            return;
         }
-        ArrayList<Character> rolledChars = new ArrayList<>(alphabet.values());
+        ArrayList<Character> rolledChars = new ArrayList<>(encryptedAlphabet.values());
         Collections.rotate(rolledChars, key);
         int i = 0;
-        for (Map.Entry<Integer, Character> map : alphabet.entrySet()) {
+        for (Map.Entry<Integer, Character> map : encryptedAlphabet.entrySet()) {
             map.setValue(rolledChars.get(i++));
         }
     }
