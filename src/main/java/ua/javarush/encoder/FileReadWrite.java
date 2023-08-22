@@ -1,6 +1,11 @@
 package ua.javarush.encoder;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class FileReadWrite {
     private final String source;
@@ -9,39 +14,51 @@ public class FileReadWrite {
         this.source = source;
     }
 
-    public void useCryptography(Cipher cipher) {
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(source));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(new CreateName().createNewName()))) {
-
+    public Integer[] read() {
+        ArrayList<Integer> array = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(source))) {
             while (reader.ready()) {
-                writer.write(cipher.encryptIt(reader.read()));
+                array.add(reader.read());
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return array.toArray(new Integer[0]);
+    }
+
+    public String[] readLines() {
+        ArrayList<String> array = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(source))) {
+            while (reader.ready()) {
+                array.add(reader.readLine());
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return array.toArray(new String[0]);
+    }
+
+    public void write(Integer[] buffer) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new CreateNewFileName().createNewName()))) {
+            for (int character : buffer) {
+                writer.write(character);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    public String getLanguage() {
-        int engCharCounter = 0;
-        int ukrCharCounter = 0;
-        try (FileReader fileReader = new FileReader(source)) {
-            char[] chars = new char[10];
-            int amountInBuffer = fileReader.read(chars);
-            for (int i = 0; i < amountInBuffer; i++) {
-                if (chars[i] >= (int) 'a' & chars[i] <= (int) 'z') {
-                    engCharCounter++;
-                } else if (chars[i] >= (int) 'а' & chars[i] <= (int) 'я') {
-                    ukrCharCounter++;
-                }
+    public void writeLines(String[] buffer) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new CreateNewFileName().createNewName()))) {
+            for (String line : buffer) {
+                writer.write(line+"\n");
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        return engCharCounter>ukrCharCounter?"eng":"ukr";
     }
 
-    private class CreateName {
+    private class CreateNewFileName {
         private static final String ENCRYPTED = " [ENCRYPTED]";
         private static final String DECRYPTED = " [DECRYPTED]";
 

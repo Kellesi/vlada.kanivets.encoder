@@ -20,6 +20,10 @@ public class AlphabetRepository {
         return languageToAlphabet;
     }
 
+    public static List<Character> getLang(String langCode) {
+        return languageToAlphabet.get(langCode);
+    }
+
     public static void addLanguage(String languageName, List<Character> languageCharacters) {
         languageToAlphabet.put(languageName, languageCharacters);
         RepoFileService.writeMap();
