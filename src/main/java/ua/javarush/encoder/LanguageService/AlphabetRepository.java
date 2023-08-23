@@ -1,4 +1,4 @@
-package ua.javarush.encoder;
+package ua.javarush.encoder.LanguageService;
 
 import java.io.File;
 import java.io.FileInputStream;

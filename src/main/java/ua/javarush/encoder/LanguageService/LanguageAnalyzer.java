@@ -1,4 +1,4 @@
-package ua.javarush.encoder;
+package ua.javarush.encoder.LanguageService;
 
 import java.util.List;
 import java.util.Map;
