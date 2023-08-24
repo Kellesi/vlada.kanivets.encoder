@@ -44,6 +44,7 @@ public class CaesarCipher {
 
     private ArrayList<Integer> rollIndex(int key, int size, EncryptorMode mode) {
         ArrayList<Integer> encryptedCharIndexes = new ArrayList<>();
+        key = key % size;
         if (mode == EncryptorMode.DECRYPT) {
             key = -key;
         }

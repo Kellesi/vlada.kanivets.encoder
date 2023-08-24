@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class AlphabetRepository {
@@ -28,6 +29,18 @@ public class AlphabetRepository {
     public static void addLanguage(String languageName, List<Character> languageCharacters) {
         languageToAlphabet.put(languageName, languageCharacters);
         RepoFileService.writeMap();
+    }
+    public static void removeLanguage(String languageName){
+        for (DefaultLanguages lang: DefaultLanguages.values()) {
+            if (languageName.equalsIgnoreCase(lang.name())){
+               throw new IllegalArgumentException("You can't delete default language");
+            }
+        }
+        languageToAlphabet.remove(languageName);
+        RepoFileService.writeMap();
+    }
+    public static HashSet<String> availableLanguages(){
+        return new HashSet<>(languageToAlphabet.keySet());
     }
 
     private static class RepoFileService {
