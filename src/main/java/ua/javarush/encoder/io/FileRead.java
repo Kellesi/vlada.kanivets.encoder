@@ -1,4 +1,4 @@
-package ua.javarush.encoder.IO;
+package ua.javarush.encoder.io;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
