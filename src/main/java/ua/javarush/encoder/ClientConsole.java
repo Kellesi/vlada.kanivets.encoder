@@ -1,6 +1,6 @@
 package ua.javarush.encoder;
 
-import ua.javarush.encoder.Cryptology.EncryptorMode;
+import ua.javarush.encoder.cryptology.EncryptorMode;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -64,7 +64,6 @@ public class ClientConsole {
             mode = console.nextLine();
             for (EncryptorMode emode : EncryptorMode.values()) {
                 if (mode.equalsIgnoreCase(emode.name()) || mode.equalsIgnoreCase(emode.getAbbreviation())) {
-                    mode = emode.toString();
                     correctMode = true;
                     break;
                 }
