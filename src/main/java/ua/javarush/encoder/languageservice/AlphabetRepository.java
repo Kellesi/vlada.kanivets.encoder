@@ -1,5 +1,6 @@
 package ua.javarush.encoder.languageservice;
 
+import ua.javarush.encoder.exception.IORuntimeException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,57 +11,77 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class AlphabetRepository {
-    private static HashMap<String, List<Character>> languageToAlphabet = new HashMap<>();
-    private static HashMap<String, List<Character>> freq = new HashMap<>();
+    private static final HashMap<String, List<Character>> languageToAlphabet = RepoFileService.readMap(RepoFileService.ALPHABET_CHARS);
+    private static final HashMap<String, List<Character>> freq = RepoFileService.readMap(RepoFileService.CHAR_FREQUENCY_STAT);
+    private static AlphabetRepository repository;
 
-    static {
-        languageToAlphabet=RepoFileService.readMap(RepoFileService.repoFile);
-        freq=RepoFileService.readMap(RepoFileService.charFrequencyStat);
+    private AlphabetRepository() {
     }
 
-    public static HashMap<String, List<Character>> getLangMap() {
+    public static AlphabetRepository getRepository() {
+        if (repository == null) {
+            repository = new AlphabetRepository();
+        }
+        return repository;
+    }
+
+    public Map<String, List<Character>> getLangMap() {
         return new HashMap<>(languageToAlphabet);
     }
 
-    public static ArrayList<Character> getAlphabet(String langCode) {
+    public List<Character> getAlphabet(String langCode) {
         return new ArrayList<>(languageToAlphabet.get(langCode));
     }
-    public static ArrayList<Character> getCharFrequency(String langCode) {
+
+    public List<Character> getAlphabetWithSymbols(String langCode) {
+        List<Character> alphabetWithSymbols = new ArrayList<>();
+        alphabetWithSymbols.addAll(languageToAlphabet.get(langCode));
+        alphabetWithSymbols.addAll(languageToAlphabet.get("Symbols"));
+        return alphabetWithSymbols;
+    }
+
+    public List<Character> getCharFrequency(String langCode) {
         return new ArrayList<>(freq.get(langCode));
     }
-    public static void addFreq(String languageName, List<Character> languageCharacters) {
+
+    public void addFreq(String languageName, List<Character> languageCharacters) {
         freq.put(languageName, languageCharacters);
-        RepoFileService.writeMap(RepoFileService.charFrequencyStat, freq);
+        RepoFileService.writeMap(RepoFileService.CHAR_FREQUENCY_STAT, freq);
     }
-    public static void addLanguage(String languageName, List<Character> languageCharacters) {
+
+    public void addLanguage(String languageName, List<Character> languageCharacters) {
         languageToAlphabet.put(languageName, languageCharacters);
-        RepoFileService.writeMap(RepoFileService.repoFile, languageToAlphabet);
+        RepoFileService.writeMap(RepoFileService.ALPHABET_CHARS, languageToAlphabet);
     }
-    public static void removeLanguage(String languageName){
-        for (DefaultLanguages lang: DefaultLanguages.values()) {
-            if (languageName.equalsIgnoreCase(lang.name())){
-               throw new IllegalArgumentException("You can't delete default language");
+
+    public void removeLanguage(String languageName) {
+        for (DefaultLanguages lang : DefaultLanguages.values()) {
+            if (languageName.equalsIgnoreCase(lang.name())) {
+                throw new IllegalArgumentException("You can't delete default language");
             }
         }
         languageToAlphabet.remove(languageName);
-        RepoFileService.writeMap(RepoFileService.repoFile, languageToAlphabet);
+        RepoFileService.writeMap(RepoFileService.ALPHABET_CHARS, languageToAlphabet);
     }
-    public static HashSet<String> availableLanguages(){
+
+    public Set<String> availableLanguages() {
         return new HashSet<>(languageToAlphabet.keySet());
     }
 
     private static class RepoFileService {
-        private static final File repoFile = new File("src/main/resources/LangRepo.txt");
-        private static final File charFrequencyStat = new File("src/main/resources/charFrequencyStat.txt");
+        private static final File ALPHABET_CHARS = new File("src/main/resources/LangRepo.txt");
+        private static final File CHAR_FREQUENCY_STAT = new File("src/main/resources/charFrequencyStat.txt");
 
         static HashMap<String, List<Character>> readMap(File fileName) {
             HashMap<String, List<Character>> map = new HashMap<>();
             try (ObjectInputStream reader = new ObjectInputStream(new FileInputStream(fileName))) {
                 map = (HashMap<String, List<Character>>) reader.readObject();
             } catch (IOException | ClassNotFoundException ex) {
-                ex.printStackTrace();
+                throw new IORuntimeException(ex);
             }
             return map;
         }
