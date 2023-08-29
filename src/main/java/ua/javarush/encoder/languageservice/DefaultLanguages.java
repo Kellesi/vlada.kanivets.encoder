@@ -1,5 +1,5 @@
 package ua.javarush.encoder.languageservice;
 
 public enum DefaultLanguages {
-    UKRAINIAN,ENGLISH,SYMBOLS,FRENCH
+    UKRAINIAN, ENGLISH, SYMBOLS, FRENCH
 }
