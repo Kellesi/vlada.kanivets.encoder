@@ -1,7 +1,7 @@
 package ua.javarush.encoder.cryptology;
 
+import ua.javarush.encoder.languageservice.AlphabetRepository;
 import ua.javarush.encoder.languageservice.TextInfo;
-import java.util.Arrays;
 import java.util.List;
 
 public class BruteForce {
@@ -31,8 +31,11 @@ public class BruteForce {
         return referenceFrequency;
     }
 
-    public int[] getPossibleKeys(int keysToGenerate) {
+    public int[] getPossibleKeys(int keysToGenerate, boolean charsEncrypted) {
         List<Character> alphabet = textInfo.getAlphabet();
+        if (charsEncrypted) {
+            alphabet.addAll(AlphabetRepository.getRepository().getAlphabet("Symbols"));
+        }
         List<Character> encryptedFrequency = textInfo.getCharFrequency().subList(0, keysToGenerate);
         List<Character> referenceFrequency = getReferenceFrequency().subList(0, keysToGenerate);
         int[] possibleKeys = new int[keysToGenerate];
@@ -44,17 +47,32 @@ public class BruteForce {
         return possibleKeys;
     }
 
-    public int[] getPossibleKeys() {
-        return getPossibleKeys(DEFAULT_NUMBER_OF_GENERATED_KEYS);
+    public int[] getPossibleKeys(int keysToGenerate) {
+        return getPossibleKeys(keysToGenerate, false);
     }
 
-    public void printSampleOfText(int[] possibleKey) {
+    public int[] getPossibleKeys(boolean charsEncrypted) {
+        return getPossibleKeys(DEFAULT_NUMBER_OF_GENERATED_KEYS, charsEncrypted);
+    }
+
+    public int[] getPossibleKeys() {
+        return getPossibleKeys(DEFAULT_NUMBER_OF_GENERATED_KEYS, false);
+    }
+
+    public void printSampleOfText(int[] possibleKey, int numberOfLines) {
         List<Character> alphabet = textInfo.getAlphabet();
         CaesarCipher cipher = new CaesarCipher(alphabet);
         for (int key : possibleKey) {
             String[] decryptedText = cipher.decryptArray(text, key);
-            System.out.println("Possible key: "+key);
-            System.out.println(Arrays.toString(decryptedText));
+            System.out.println("Possible key: " + key);
+            for (int i = 0; i < numberOfLines; i++) {
+                System.out.println(decryptedText[i]);
+            }
         }
+    }
+
+    public void printSampleOfText(int[] possibleKey) {
+        int defaultNumberOfLines = 2;
+        printSampleOfText(possibleKey, defaultNumberOfLines);
     }
 }

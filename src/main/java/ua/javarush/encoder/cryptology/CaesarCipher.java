@@ -1,35 +1,39 @@
-package ua.javarush.encoder.Cryptology;
+package ua.javarush.encoder.cryptology;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class CaesarCipher {
+    private final List<Character> alphabet;
 
-    public Integer[] encryptIntegerArray(Integer[] buffer, int key, EncryptorMode mode, List<Character> alphabet) {
-        Integer[] encryptedArray = new Integer[buffer.length];
-        int i = 0;
-        for (int character : buffer) {
-            encryptedArray[i++] = encryptChar((char) character, key, mode, alphabet);
-        }
-        return encryptedArray;
+    public CaesarCipher(List<Character> alphabet) {
+        this.alphabet = alphabet;
     }
 
-    public String[] encryptStringArray(String[] buffer, int key, EncryptorMode mode, List<Character> alphabet) {
+    public String[] encryptArray(String[] buffer, int key) {
+        if (key == 0) {
+            return buffer;
+        }
         String[] encryptedArray = new String[buffer.length];
-        StringBuilder newLine = new StringBuilder();
         int i = 0;
         for (String line : buffer) {
+            StringBuilder newLine = new StringBuilder();
             for (char character : line.toCharArray()) {
-                newLine.append((char) encryptChar(character, key, mode, alphabet));
+                newLine.append((char) encryptChar(character, key));
             }
             encryptedArray[i++] = newLine.toString();
         }
         return encryptedArray;
     }
 
-    public int encryptChar(char character, int key, EncryptorMode mode, List<Character> alphabet) {
-        ArrayList<Integer> encryptedCharIndexes = rollIndex(key, alphabet.size(), mode);
+    public String[] decryptArray(String[] buffer, int key) {
+        key = -key;
+        return encryptArray(buffer, key);
+    }
+
+    public int encryptChar(char character, int key) {
+        ArrayList<Integer> encryptedCharIndexes = rollIndex(key, alphabet.size());
         int encrypted = -1;
         if (alphabet.contains(character) || alphabet.contains(Character.toLowerCase(character))) {
             if (Character.isUpperCase(character)) {
@@ -42,12 +46,9 @@ public class CaesarCipher {
         return encrypted != -1 ? encrypted : character;
     }
 
-    private ArrayList<Integer> rollIndex(int key, int size, EncryptorMode mode) {
+    private ArrayList<Integer> rollIndex(int key, int size) {
         ArrayList<Integer> encryptedCharIndexes = new ArrayList<>();
         key = key % size;
-        if (mode == EncryptorMode.DECRYPT) {
-            key = -key;
-        }
         for (int i = 0; i < size; i++) {
             encryptedCharIndexes.add(i);
         }
