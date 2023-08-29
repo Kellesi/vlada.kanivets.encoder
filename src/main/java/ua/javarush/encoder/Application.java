@@ -1,9 +1,10 @@
 package ua.javarush.encoder;
 
+import ua.javarush.encoder.runner.Runner;
+
 public class Application {
     public static void main(String[] args) {
-        System.out.println("Welcome!");
-        Runner.run(args);
+        new Runner().run(args);
         System.out.println("Completed");
     }
 }
