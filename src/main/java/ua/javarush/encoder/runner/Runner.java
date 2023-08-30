@@ -52,11 +52,7 @@ public class Runner {
         FileRead fileRead = new FileRead();
         String[] text = fileRead.readLines(filePath);
         BruteForce bruteForce = new BruteForce(text);
-        int[] possibleKeys = bruteForce.getPossibleKeys();
-        bruteForce.printSampleOfText(possibleKeys);
-
-        System.out.println(System.lineSeparator() + "Try with encrypted symbols");
-        possibleKeys = bruteForce.getPossibleKeys(true);
+        int[] possibleKeys = bruteForce.getPossibleKeys(true);
         bruteForce.printSampleOfText(possibleKeys);
     }
 
@@ -65,7 +61,7 @@ public class Runner {
         String[] text = fileRead.readLines(filePath);
         String[] referencedText = fileRead.readLines(filePathOfReferenceText);
         BruteForce bruteForce = new BruteForce(text, referencedText);
-        int[] possibleKeys = bruteForce.getPossibleKeys();
+        int[] possibleKeys = bruteForce.getPossibleKeys(true);
         bruteForce.printSampleOfText(possibleKeys);
     }
 
