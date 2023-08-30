@@ -36,12 +36,12 @@ public class BruteForce {
         if (charsEncrypted) {
             alphabet.addAll(AlphabetRepository.getRepository().getAlphabet("Symbols"));
         }
-        List<Character> encryptedFrequency = textInfo.getCharFrequency().subList(0, keysToGenerate);
-        List<Character> referenceFrequency = getReferenceFrequency().subList(0, keysToGenerate);
+        List<Character> encryptedFrequency = textInfo.getCharFrequency();
+        List<Character> referenceFrequency = getReferenceFrequency();
         int[] possibleKeys = new int[keysToGenerate];
 
         for (int i = 0; i < keysToGenerate; i++) {
-            int key = (alphabet.size() - alphabet.indexOf(encryptedFrequency.get(0)) + alphabet.indexOf(referenceFrequency.get(i))) % alphabet.size();
+            int key = (alphabet.size() - alphabet.indexOf(encryptedFrequency.get(i)) + alphabet.indexOf(referenceFrequency.get(0))) % alphabet.size();
             possibleKeys[i] = key;
         }
         return possibleKeys;
